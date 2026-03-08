@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // ✅ MongoDB Connection
-mongoose.connect("mongodb+srv://expenseUser:Fide25610279@cluster0.kyigtv6.mongodb.net/ExpenseDB?retryWrites=true&w=majority")
+mongoose.connect(process.env.MONGO_URL)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("MongoDB Error:", err));
 
@@ -41,3 +41,4 @@ app.get('/expenses', async (req, res) => {
 // ✅ Port for Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on port " + PORT));
+
