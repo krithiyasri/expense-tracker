@@ -6,8 +6,12 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-mongoose.connect("mongodb+srv://expenseUser:Fide25610279@cluster0.kyigtv6.mongodb.net/?appName=Cluster0");
+// ✅ MongoDB Connection
+mongoose.connect("mongodb+srv://expenseUser:Fide25610279@cluster0.kyigtv6.mongodb.net/ExpenseDB?retryWrites=true&w=majority")
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log("MongoDB Error:", err));
 
+// ✅ Schema & Model
 const Expense = mongoose.model('Expense', {
   amount: Number,
   category: String,
@@ -15,43 +19,25 @@ const Expense = mongoose.model('Expense', {
   notes: String
 });
 
+// ✅ Routes
 app.post('/add', async (req, res) => {
-  await Expense.create(req.body);
-  res.sendStatus(200);
+  try {
+    await Expense.create(req.body);
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).send("Error saving expense");
+  }
 });
 
 app.get('/expenses', async (req, res) => {
-  const expenses = await Expense.find();
-  res.json(expenses);
+  try {
+    const expenses = await Expense.find();
+    res.json(expenses);
+  } catch (err) {
+    res.status(500).send("Error fetching expenses");
+  }
 });
 
-
-const express = require('express');
-const mongoose = require('mongoose');
-const path = require('path');
-
-const app = express();
-app.use(express.json());
-app.use(express.static('public'));
-
-mongoose.connect("mongodb+srv://expenseUser:Fide25610279@cluster0.kyigtv6.mongodb.net/?appName=Cluster0");
-
-const Expense = mongoose.model('Expense', {
-  amount: Number,
-  category: String,
-  date: String,
-  notes: String
-});
-
-app.post('/add', async (req, res) => {
-  await Expense.create(req.body);
-  res.sendStatus(200);
-});
-
-app.get('/expenses', async (req, res) => {
-  const expenses = await Expense.find();
-  res.json(expenses);
-});
-
+// ✅ Port for Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on port " + PORT));
